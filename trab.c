@@ -4,7 +4,6 @@ Tiago Catoia
 Bruno Mascioli
 */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,35 +29,62 @@ Node *createNode(char item) {
   return newNode;
 }
 
+void slice_tree(char line[], char** left_tree, char** right_tree) {
+
+  char* token = strtok(line, " ");
+
+  token = strtok(NULL, "\n");
+
+  int count_parenteses = 0;
+  int i = 0;
+  int y = 0;
+
+  while (1) {
+    if (token[i] == '(') {
+      count_parenteses++;
+    }
+    if (token[i] == ')') {
+      count_parenteses--;
+    }
+    i++;
+    if (count_parenteses == 0 && y == 0) {
+      *left_tree = (char*)malloc(i + 1);
+      strncpy(*left_tree, token, i);
+      (*left_tree)[i] = '\0';
+      y = i + 3;
+      continue;
+    }
+    if(count_parenteses == 0 && y != 0 && i > y){
+      *right_tree = (char*)malloc((i - 1) * sizeof(char));
+      strncpy(*right_tree, token + y - 1, i - y + 1);
+      (*right_tree)[i] = '\0';
+      break;
+    }
+  }
+}
+
 t_binary_tree *create_tree(Node* root, char node_as_string[]) {
-  //(a, (b,(),()), (c,(),()))
-  if (strcmp(node_as_string, "()" == 0)) {
+  if (strcmp(node_as_string, "()") == 0) {
     return NULL;
   }
 
-  // raiz = a;
-  // tree_left = (b,(),());
-  // tree_right = (c,(),());
-  
-  char tree_left[];
-  char tree_right[];
+  char* left_tree = NULL;
+  char* right_tree = NULL;
 
-  if(strcmp(tree_left, "()") != 0){
-    char elem_left = b;
-  }
-  
-  if(strcmp(tree_rigth, "()") != 0){
-    char elem_right = c;
-  }
+  slice_tree(node_as_string, &left_tree, &right_tree);
+  printf("Left: %s\n", left_tree);
+  printf("Right: %s\n", right_tree);
 
-  char elem = node_as_string[1];
-  Node* root = createNode(elem);
-  Node* root->left = createNode(elem_left);
-  Node* root->right = createNode(elem_right);
-  
-  create_tree(root->left, tree_left);
-  create_tree(root->right, tree_rigth);
+  char left_elem = left_tree[1];
+  char right_elem = right_tree[1];
+  char root_elem = node_as_string[1];
+  root = createNode(root_elem);
 
+  root->left = createNode(left_elem);
+  root->right = createNode(right_elem);
+  
+  create_tree(root->left, left_tree); 
+  create_tree(root->right, right_tree);
 }
 
 void print(Node *root) {}
@@ -105,7 +131,7 @@ int main(int argc, char const *argv[]) {
     if (strcmp(token, "create") == 0) {
       token = strtok(NULL, "\n");
       printf("%s\n", token);
-      tree = create(tree->root, token);
+      tree = create_tree(tree->root, token);
     } else if (strcmp(line, "print") == 0) {
       print(tree->root);
     } else if (strcmp(line, "in") == 0) {
@@ -120,3 +146,5 @@ int main(int argc, char const *argv[]) {
   return 0;
 }
 // (A, (B, (), ()))
+
+// (a, (b, (k, (), ()), (j, (), ())), (c, (f, (), ()), (g, (), ())))
