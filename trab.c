@@ -1,9 +1,3 @@
-/*
-Lucas Pereira dos Santos
-Tiago Catoia
-Bruno Mascioli
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -130,6 +124,13 @@ void post(Node* root) {
   printf("%c ", root->item);
 }
 
+void destroy(Node* node) {
+  if (node == NULL) return;
+  post(node->left);
+  post(node->right);
+  free(node);
+}
+
 int main(int argc, char const *argv[]) {
   t_binary_tree* tree = (t_binary_tree*) malloc(sizeof(t_binary_tree));
   tree->root = NULL;
@@ -155,6 +156,6 @@ int main(int argc, char const *argv[]) {
     }
     fscanf(stdin, "%s", line);
   }
-
+  destroy(tree->root);
   return 0;
 }
