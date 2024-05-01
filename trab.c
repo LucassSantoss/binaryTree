@@ -1,3 +1,9 @@
+/*
+Lucas Pereira dos Santos
+Tiago Catoia
+Bruno Mascioli
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,7 +23,7 @@ typedef struct {
 Node* createNode(char item) {
   Node* newNode = (Node*) malloc(sizeof(Node));
   if (newNode == NULL) {
-    fprintf(stderr, "Erro ao alocar memória.\n");
+    fprintf(stderr, "Erro ao alocar mem�ria.\n");
     exit(1);
   }
   newNode->item = item;
@@ -27,7 +33,7 @@ Node* createNode(char item) {
 }
 
 void slice_tree(char line[], char** left_tree, char** right_tree) {
-    char* token = strtok(line, ",");
+    char* token = strtok(line, " ");
 
     token = strtok(NULL, "\n");
 
@@ -40,9 +46,7 @@ void slice_tree(char line[], char** left_tree, char** right_tree) {
             count_parenteses++;
         if (token[i] == ')') 
             count_parenteses--;
-        
         i++;
-        
         if (count_parenteses == 0 && y == 0) {
             *left_tree = (char*)malloc(i + 1);
             strncpy(*left_tree, token, i);
@@ -72,13 +76,11 @@ Node* create_tree(Node* root, char tree_as_string[]) {
   slice_tree(tree_as_string, &left_tree, &right_tree);
 
   if(strcmp(left_tree, "()") != 0){
-    char left_elem = left_tree[1];
     root->left = create_tree(root->left, left_tree); 
     free(left_tree); 
   }
 
   if(strcmp(right_tree, "()") != 0){
-    char right_elem = right_tree[1];
     root->right = create_tree(root->right, right_tree);
     free(right_tree);
   }
@@ -95,7 +97,8 @@ void print_tree(Node* root, int space) {
   print_tree(root->right, space);
 
   printf("\n");
-  for(int i = COUNT; i < space; i++){
+  int i;
+  for(i = COUNT; i < space; i++){
     printf(" ");
   }
   printf("%c\n", root->item);
@@ -126,8 +129,8 @@ void post(Node* root) {
 
 void destroy(Node* node) {
   if (node == NULL) return;
-  post(node->left);
-  post(node->right);
+  destroy(node->left);
+  destroy(node->right);
   free(node);
 }
 
@@ -136,26 +139,26 @@ int main(int argc, char const *argv[]) {
   tree->root = NULL;
 
   char line[1000];
-  fgets(line, 1000, stdin);
-  while (strcmp(line, "exit") != 0) {
+  do {
+    fgets(line, 1000, stdin);
     char* token = strtok(line, " ");
     if (strcmp(token, "create") == 0) {
       token = strtok(NULL, "\n");
       tree->root = create_tree(tree->root, token);
-    } else if (strcmp(line, "print") == 0) {
+    } else if (strcmp(line, "print\n") == 0) {
       print_tree(tree->root, 0);
-    } else if (strcmp(line, "in") == 0) {
+    } else if (strcmp(line, "in\n") == 0) {
       in(tree->root);
       printf("\n");
-    } else if (strcmp(line, "pre") == 0) {
+    } else if (strcmp(line, "pre\n") == 0) {
       pre(tree->root);
       printf("\n");
-    } else if (strcmp(line, "post") == 0) {
+    } else if (strcmp(line, "post\n") == 0) {
       post(tree->root);
       printf("\n");
     }
-    fscanf(stdin, "%s", line);
-  }
+  } while (strcmp(line, "exit\n") != 0);
+
   destroy(tree->root);
   return 0;
 }
